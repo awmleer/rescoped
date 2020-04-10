@@ -3,7 +3,7 @@ import {useEffect, useState, useRef, FC, createElement} from 'react'
 import * as ReactDOM from 'react-dom'
 
 interface Props {
-  tagName: string
+  tagName?: string
 }
 
 export const Scoped: FC<Props> = (props) => {
