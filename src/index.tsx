@@ -32,7 +32,6 @@ export const Scoped: FC<Props> = (props) => {
 const Inner: FC<{
   shadow?: ShadowRoot
 }> = (props) => {
-  console.log(props.shadow)
   if (!props.shadow) return null
   return ReactDOM.createPortal(props.children, props.shadow as any as Element)
 }
