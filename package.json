@@ -1,0 +1,21 @@
+{
+  "name": "rescoped",
+  "version": "1.0.0",
+  "description": "Scoped styles made easy.",
+  "main": "index.js",
+  "repository": "git@github.com:awmleer/rescoped.git",
+  "author": "awmleer <awmleer@sparker.xyz>",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-clean": "^0.4.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "typescript": "^3.8.3"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0"
+  }
+}
