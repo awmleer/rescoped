@@ -3,7 +3,8 @@
   "version": "0.0.2",
   "scripts": {
     "build": "gulp prebuild && tsc",
-    "start": "dumi dev"
+    "start": "dumi dev",
+    "docs:build": "dumi build"
   },
   "description": "Scoped styles made easy.",
   "main": "index.js",
