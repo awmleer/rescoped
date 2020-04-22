@@ -2,7 +2,8 @@
   "name": "rescoped",
   "version": "0.0.2",
   "scripts": {
-    "build": "gulp prebuild && tsc"
+    "build": "gulp prebuild && tsc",
+    "start": "dumi dev"
   },
   "description": "Scoped styles made easy.",
   "main": "index.js",
@@ -13,6 +14,7 @@
   "devDependencies": {
     "@types/react": "^16.9.34",
     "@types/react-dom": "^16.9.6",
+    "dumi": "^1.0.19",
     "gulp": "^4.0.2",
     "gulp-clean": "^0.4.0",
     "react": "^16.13.1",
