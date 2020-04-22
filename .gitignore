@@ -1,5 +1,6 @@
 /lib/
 .umi/
+/dist/
 
 # Webstorm
 .idea/
