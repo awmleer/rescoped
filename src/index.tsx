@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {useEffect, useState, useRef, FC, ComponentType, ReactNode} from 'react'
+import {useEffect, useState, useRef, FC, ComponentType, ReactElement} from 'react'
 import * as ReactDOM from 'react-dom'
 
 customElements.define('rescoped-custom-element', class extends HTMLElement {
@@ -16,31 +16,6 @@ declare global {
   }
 }
 
-
-interface Props {
-  tagName?: string
-  slotContent?: ReactNode
-}
-
-export const Scoped: FC<Props> = (props) => {
-  const shadowRef = useRef<HTMLElement>()
-  const [shadow, setShadow] = useState<ShadowRoot>()
-  
-  useEffect(() => {
-    const shadow = shadowRef.current.shadowRoot
-    setShadow(shadow)
-  }, [])
-  
-  return (
-    <rescoped-custom-element ref={shadowRef}>
-      <Inner shadow={shadow}>
-        {props.children}
-      </Inner>
-      {props.slotContent}
-    </rescoped-custom-element>
-  )
-}
-
 const Inner: FC<{
   shadow?: ShadowRoot
 }> = (props) => {
@@ -50,20 +25,57 @@ const Inner: FC<{
 
 export function scoped<P>(C: ComponentType<P>) {
   const ScopedComponent: FC<P> = (props) => {
-    const handledProps = {
-      ...props,
-      children: (
-        <slot/>
-      )
+    const handledProps: any = {...props}
+    handledProps.children = (
+      <slot />
+    )
+    const slotContents: ReactElement[] = []
+    for (const key in handledProps) {
+      if (!handledProps.hasOwnProperty(key)) continue
+      const prop = handledProps[key]
+      if (prop instanceof SlottedProp) {
+        handledProps[key] = (
+          <slot name={key}/>
+        )
+        const {element} = prop
+        slotContents.push(React.cloneElement(element, {
+          ...element.props,
+          key,
+          slot: key,
+        }))
+      }
     }
+  
+    const shadowRef = useRef<HTMLElement>()
+    const [shadow, setShadow] = useState<ShadowRoot>()
+  
+    useEffect(() => {
+      const shadow = shadowRef.current.shadowRoot
+      setShadow(shadow)
+    }, [])
+    
     return (
-      <Scoped slotContent={props.children}>
-        <C {...handledProps}/>
-      </Scoped>
+      <rescoped-custom-element ref={shadowRef}>
+        <Inner shadow={shadow}>
+          <C {...handledProps}/>
+        </Inner>
+        {props.children}
+        {slotContents}
+      </rescoped-custom-element>
     )
   }
   if (C.displayName) {
     ScopedComponent.displayName = C.displayName
   }
   return ScopedComponent
+}
+
+class SlottedProp {
+  constructor(
+    public element: ReactElement
+  ) {}
+}
+
+export function slotted(node: ReactElement) {
+  return new SlottedProp(node)
 }

@@ -1,9 +1,13 @@
 import * as React from 'react'
-import {scoped} from 'rescoped'
+import {scoped, slotted} from 'rescoped'
+import {ReactNode} from 'react'
 
-const Foo = scoped((props) => {
+const Foo = scoped<{
+  part: ReactNode
+}>((props) => {
   return (
     <div>
+      {props.part}
       <p>foo self</p>
       {props.children}
     </div>
@@ -24,7 +28,9 @@ const App = scoped(() => {
         {appStyle}
       </style>
       <p>app</p>
-      <Foo>
+      <Foo part={slotted(
+          <p>part 1</p>
+      )}>
         <p>foo children</p>
       </Foo>
     </>

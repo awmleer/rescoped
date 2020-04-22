@@ -7,13 +7,15 @@
     "module": "commonjs",
     "jsx": "react",
     "lib": ["es6", "dom"],
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "skipLibCheck": true
   },
   "include": [
     "./src/**/*"
   ],
   "exclude": [
     "**/__tests__",
-    "node_modules"
+    "node_modules",
+    "**/.umi"
   ]
 }
