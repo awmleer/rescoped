@@ -1,6 +1,7 @@
 import * as React from 'react'
 import {useEffect, useState, useRef, FC, ComponentType, ReactElement} from 'react'
 import * as ReactDOM from 'react-dom'
+import {StyleSheets} from './style-sheets'
 
 customElements.define('rescoped-custom-element', class extends HTMLElement {
   connectedCallback() {
@@ -16,14 +17,19 @@ declare global {
   }
 }
 
-const Inner: FC<{
+const Portal: FC<{
   shadow?: ShadowRoot
 }> = (props) => {
   if (!props.shadow) return null
   return ReactDOM.createPortal(props.children, props.shadow as any as Element)
 }
 
-export function scoped<P>(C: ComponentType<P>) {
+interface Config {
+  style?: string | string[]
+  styleUrl?: string | string[]
+}
+
+export function scoped<P>(C: ComponentType<P>, config?: Config) {
   const ScopedComponent: FC<P> = (props) => {
     const handledProps: any = {...props}
     handledProps.children = (
@@ -55,13 +61,16 @@ export function scoped<P>(C: ComponentType<P>) {
     }, [])
     
     return (
-      <rescoped-custom-element ref={shadowRef}>
-        <Inner shadow={shadow}>
+      <>
+        <rescoped-custom-element ref={shadowRef}>
+          {props.children}
+          {slotContents}
+        </rescoped-custom-element>
+        <Portal shadow={shadow}>
           <C {...handledProps}/>
-        </Inner>
-        {props.children}
-        {slotContents}
-      </rescoped-custom-element>
+          <StyleSheets style={config?.style} styleUrl={config?.styleUrl}/>
+        </Portal>
+      </>
     )
   }
   if (C.displayName) {
