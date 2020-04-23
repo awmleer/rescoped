@@ -1,3 +1,7 @@
 export default {
-  base: '/'
+  base: '/',
+  hash: true,
+  history: {
+    type: 'hash',
+  },
 }
