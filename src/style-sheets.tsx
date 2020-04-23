@@ -1,4 +1,5 @@
-import React, {memo, ReactElement} from 'react'
+import * as React from 'react'
+import {memo, ReactElement} from 'react'
 
 interface Props {
   style?: string | string[]
