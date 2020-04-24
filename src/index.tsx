@@ -3,11 +3,15 @@ import {useEffect, useState, useRef, FC, ComponentType, ReactElement} from 'reac
 import * as ReactDOM from 'react-dom'
 import {StyleSheets} from './style-sheets'
 
-customElements.define('rescoped-custom-element', class extends HTMLElement {
+class RescopedCustomElement extends HTMLElement {
+  public _shadow: ShadowRoot
   connectedCallback() {
-    this.attachShadow({mode: 'open'})
+    const mode = this.getAttribute('mode')
+    this._shadow = this.attachShadow({mode: mode === 'open' ? 'open' : 'closed'})
   }
-})
+}
+
+customElements.define('rescoped-custom-element', RescopedCustomElement)
 
 declare global {
   namespace JSX {
@@ -27,9 +31,10 @@ const Portal: FC<{
 interface Config {
   style?: string | string[]
   styleUrl?: string | string[]
+  mode?: ShadowRootMode
 }
 
-export function scoped<P>(C: ComponentType<P>, config?: Config) {
+export function scoped<P={}>(C: ComponentType<P>, config?: Config) {
   const ScopedComponent: FC<P> = (props) => {
     const handledProps: any = {...props}
     handledProps.children = (
@@ -52,17 +57,17 @@ export function scoped<P>(C: ComponentType<P>, config?: Config) {
       }
     }
   
-    const shadowRef = useRef<HTMLElement>()
+    const customElementRef = useRef<RescopedCustomElement>()
     const [shadow, setShadow] = useState<ShadowRoot>()
   
     useEffect(() => {
-      const shadow = shadowRef.current.shadowRoot
+      const shadow = customElementRef.current._shadow
       setShadow(shadow)
     }, [])
     
     return (
       <>
-        <rescoped-custom-element ref={shadowRef}>
+        <rescoped-custom-element ref={customElementRef} mode={config?.mode}>
           {props.children}
           {slotContents}
         </rescoped-custom-element>
