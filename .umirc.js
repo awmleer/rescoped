@@ -4,4 +4,7 @@ export default {
   history: {
     type: 'hash',
   },
+  resolve: {
+    previewLangs: [],
+  },
 }

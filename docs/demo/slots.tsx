@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {scoped, slotted} from '../../src/index'
+import {scoped, slotted} from 'rescoped'
 import {ReactNode} from 'react'
 
 const Foo = scoped<{
