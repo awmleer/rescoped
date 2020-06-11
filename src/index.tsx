@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {useEffect, useState, useRef, FC, ComponentType, ReactElement} from 'react'
+import {useEffect, useState, useRef, FC, ComponentType, ReactElement, forwardRef, PropsWithChildren} from 'react'
 import * as ReactDOM from 'react-dom'
 import {StyleSheets} from './style-sheets'
 
@@ -35,7 +35,7 @@ interface Config {
 }
 
 export function scoped<P={}>(C: ComponentType<P>, config?: Config) {
-  const ScopedComponent: FC<P> = (props) => {
+  const ScopedComponent = forwardRef<any, PropsWithChildren<P>>((props, ref) => {
     const handledProps: any = {...props}
     handledProps.children = (
       <slot />
@@ -72,12 +72,12 @@ export function scoped<P={}>(C: ComponentType<P>, config?: Config) {
           {slotContents}
         </rescoped-custom-element>
         <Portal shadow={shadow}>
-          <C {...handledProps}/>
+          <C {...handledProps} ref={ref}/>
           <StyleSheets style={config?.style} styleUrl={config?.styleUrl}/>
         </Portal>
       </>
     )
-  }
+  })
   if (C.displayName) {
     ScopedComponent.displayName = C.displayName
   }
