@@ -6,7 +6,17 @@ const Foo = scoped<{
   part: ReactNode
 }>((props) => {
   return (
-    <div>
+    <div
+      onClick={(e) => {
+        console.log('click', e.target)
+      }}
+      onMouseOver={(e) => {
+        console.log('over', e)
+      }}
+      onMouseLeave={(e) => {
+        console.log('leave', e)
+      }}
+    >
       {props.part}
       <p>foo self</p>
       <button>test</button>

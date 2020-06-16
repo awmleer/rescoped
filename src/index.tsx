@@ -22,10 +22,10 @@ declare global {
 }
 
 const Portal: FC<{
-  shadow?: ShadowRoot
+  element?: Element
 }> = (props) => {
-  if (!props.shadow) return null
-  return ReactDOM.createPortal(props.children, props.shadow as any as Element)
+  if (!props.element) return null
+  return ReactDOM.createPortal(props.children, props.element)
 }
 
 interface Config {
@@ -36,10 +36,16 @@ interface Config {
 
 export function scoped<P={}>(C: ComponentType<P>, config?: Config) {
   const ScopedComponent = forwardRef<any, PropsWithChildren<P>>((props, ref) => {
+    const customElementRef = useRef<RescopedCustomElement>()
+    const [shadow, setShadow] = useState<ShadowRoot>()
+  
+    useEffect(() => {
+      const shadow = customElementRef.current._shadow
+      ReactDOM.createPortal(props.children, customElementRef.current)
+      setShadow(shadow)
+    }, [])
+  
     const handledProps: any = {...props}
-    handledProps.children = (
-      <slot />
-    )
     const slotContents: ReactElement[] = []
     for (const key in handledProps) {
       if (!handledProps.hasOwnProperty(key)) continue
@@ -56,22 +62,21 @@ export function scoped<P={}>(C: ComponentType<P>, config?: Config) {
         }))
       }
     }
-  
-    const customElementRef = useRef<RescopedCustomElement>()
-    const [shadow, setShadow] = useState<ShadowRoot>()
-  
-    useEffect(() => {
-      const shadow = customElementRef.current._shadow
-      setShadow(shadow)
-    }, [])
+    
+    handledProps.children = (
+      <>
+        <slot />
+        <Portal element={customElementRef.current}>
+          {props.children}
+          {slotContents}
+        </Portal>
+      </>
+    )
     
     return (
       <>
-        <rescoped-custom-element ref={customElementRef} mode={config?.mode}>
-          {props.children}
-          {slotContents}
-        </rescoped-custom-element>
-        <Portal shadow={shadow}>
+        <rescoped-custom-element ref={customElementRef} mode={config?.mode} />
+        <Portal element={shadow as any as Element}>
           <C {...handledProps} ref={ref}/>
           <StyleSheets style={config?.style} styleUrl={config?.styleUrl}/>
         </Portal>
